@@ -97,11 +97,11 @@ database_dir = 'data/ptdb_tug/MALE/MIC/M10/';
 audios = dir('data/ptdb_tug/MALE/MIC/M10/*.wav');
 getPitchCepstrum(audios, database_dir, voiced_model, unvoiced_model, 32, 10);
 
-files = dir('data/fda_ue/*.f0ref');
-train_audios = dir('data/fda_ue/*.wav');
+%files = dir('data/fda_ue/*.f0ref');
+%train_audios = dir('data/fda_ue/*.wav');
 
-[voiced_model, unvoiced_model] = learnFromData(files,'data/fda_ue/',train_audios,'data/fda_ue/', w_L, 15);
+%[voiced_model, unvoiced_model] = learnFromData(files,'data/fda_ue/',train_audios,'data/fda_ue/', w_L, 15);
 
-audios = dir('data/fda_ue/*.wav');
-getPitchCepstrum(audios, 'data/fda_ue/', voiced_model, unvoiced_model, w_L, 15);
+%audios = dir('data/fda_ue/*.wav');
+%getPitchCepstrum(audios, 'data/fda_ue/', voiced_model, unvoiced_model, w_L, 15);
 
