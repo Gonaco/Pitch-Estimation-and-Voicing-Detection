@@ -24,7 +24,7 @@ h = waitbar(0,'Calculating the pitch');
         signals{f} = x;
         fs_array{f} = f_s;
         
-        x = expandVector(x,shift,f_s); % Fill the signal x with 0 15ms in the begining and 15ms in the end 
+        x = expandVector(x,shift,f_s); % Fill the signal x with shift ms in the begining and shift ms in the end 
         
         sampl_numb = length(x);
         audio_t = (sampl_numb/f_s)*1e3; %in ms
@@ -38,8 +38,12 @@ h = waitbar(0,'Calculating the pitch');
         for counter = 0:shift:(audio_t-w_L) % The 32ms window moves every 15ms
             start = f_s*counter/1e3+1;
             finish = f_s*(counter+w_L)/1e3+1;
-
-            x_w = x(start:finish);
+            
+            if finish > sampl_numb
+                x_w = x(start:end);
+            else
+                x_w = x(start:finish);
+            end
             
             % X_w = fft(x_w);
 

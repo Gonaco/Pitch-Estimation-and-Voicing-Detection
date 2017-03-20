@@ -12,6 +12,7 @@ mean_evolution2 = [];
 max_evolution2 = [];
 
 peak = [];
+peak_n = [];
 pitch = [];
 
 
@@ -75,6 +76,8 @@ h = waitbar(0,'Analyzing Data');
             max_peak2_place = places(max_peak2_place); % Second max place
             
             peak = [peak; max_peak2];
+            
+            peak_n = [peak_n; length(peaks)];
 
             pitch = [pitch; f_s/(max_peak2_place-max_peak_place)];
 
@@ -166,6 +169,8 @@ h = waitbar(0,'Analyzing Data');
     voicedSamples_max2 = max_evolution2(labelsVoiced);
     voicedSamples_peak = peak(labelsVoiced);
     voicedSamples_pitch = pitch(labelsVoiced);
+    voicedSamples_peaks_n = peak_n(labelsVoiced);
+    
     labelsUnvoiced = find(voiced<1);
     unvoicedSamples_mean = mean_evolution1(labelsUnvoiced);
     unvoicedSamples_max = max_evolution1(labelsUnvoiced);
@@ -173,6 +178,7 @@ h = waitbar(0,'Analyzing Data');
     unvoicedSamples_max2 = max_evolution2(labelsUnvoiced);
     unvoicedSamples_peak = peak(labelsUnvoiced);
     unvoicedSamples_pitch = pitch(labelsUnvoiced);
+    unvoicedSamples_peaks_n = peak_n(labelsUnvoiced);
 
     figure
 
@@ -249,6 +255,15 @@ h = waitbar(0,'Analyzing Data');
     set(ab,'FaceColor','none','EdgeColor','r');
     hold off
     title('Histogram. Pitch value from the x_w autocorrelation')
+    
+    figure
+    hist(voicedSamples_peaks_n, length(w_prior))
+    hold on
+    [a b] = hist(unvoicedSamples_peaks_n, length(w_prior));
+    ab=bar(b,a);
+    set(ab,'FaceColor','none','EdgeColor','r');
+    hold off
+    title('Histogram. Number of peaks from the x_w autocorrelation')
 
 end
 

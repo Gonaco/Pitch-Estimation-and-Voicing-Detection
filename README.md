@@ -46,9 +46,34 @@ The data used can be achieved from the next Google Drive link:
 [Download
 Data](https://drive.google.com/drive/u/0/folders/0B48Yxh5ta0HSb1QxZC1VeFpWTms)
 
+The predefined directory scheme, in order to work without changing the
+code, is
+
+``` {.vhdl}
+
+    .
+├── data
+│   ├── fda_ue
+│   └── ptdb_tug
+│       ├── FEMALE
+│       │   └── MIC
+│       │       ├── F01
+│       │       ├── ...
+│       │       └── F10
+│       └── MALE
+│           └── MIC
+│               ├── M01
+│               ├── ...
+│               └── M10
+
+
+```
+
 ### Github
 
 And the whole project can be found in Github:
+
+[Pitch-Estimation-and-Voicing-Detection](https://github.com/Gonaco/Pitch-Estimation-and-Voicing-Detection)
 
 Data Analysis
 =============
@@ -397,6 +422,12 @@ fclose(fileID);
 Results
 -------
 
+``` {.bash}
+
+
+
+```
+
 Second algorithm. Trained Bayesian decisor + Cepstrum
 =====================================================
 
@@ -438,7 +469,9 @@ The next picture draw a noisy signal and its Cepstrum processed signal
 
 ![](ceps_unvoiced_comp.png)
 
-and this one depict a voiced signal also compared with its Cepstrum.
+and this one depict a voiced signal also compared with its Cepstrum. It
+should be noticed that the voiced signal has a very clear peak, meaning
+that the signal has periodicity.
 
 ![](ceps_voiced_comp.png)
 
@@ -457,7 +490,7 @@ known data.
 
 ### `learnFromData`
 
-The inputs needed will be:
+The needed inputs will be:
 
 -   `data`. The files of the referenced data.
 -   `database_dir_data`. The directories of the referenced data.
@@ -539,7 +572,7 @@ of
 
 ``` {.matlab}
 
-x=1:600; %maximum number of samples required
+x=1:length(z_array); %maximum number of samples required
 likelihood_voiced = 1/(sqrt(2*pi*var(voicedSamples)))*exp(-1/(2*var(voicedSamples))*(x-mean(voicedSamples)).^2);
 likelihood_unvoiced = 1/(sqrt(2*pi*var(unvoicedSamples)))*exp(-1/(2*var(unvoicedSamples))*(x-mean(unvoicedSamples)).^2);
 
@@ -553,7 +586,14 @@ unvoiced_model = prior_unvoiced*likelihood_unvoiced;
 
 ### `getPitchCepstrum`
 
+In this case, just the pitch vector will be returned, but as the
+`getPitch` function, files will be printed. `getPitchCepstrum` will need
+the same parameters than `getPitch` but, in addition, the voiced and
+unvoiced bayesians model should be introduced.
+
 ``` {.matlab}
+
+function [pitch_array] = getPitchCepstrum(audios, audios_database_dir, voiced_model, unvoiced_model, w_L, shift)
 
 ```
 
@@ -627,5 +667,11 @@ pitch = max_peak_place*1e3/w_L
 
 Results
 -------
+
+``` {.bash}
+
+
+
+```
 
 <bibliography:/ssh:daniel@koiserver.ddns.net:/home/daniel/Documents/Apuntes/Master/ST/Assigments/1/Assigment_1_Pitch_estimation_and_voicing_detection.bib>

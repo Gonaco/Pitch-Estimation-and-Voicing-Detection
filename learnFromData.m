@@ -1,4 +1,4 @@
-function [voiced_model, unvoiced_model] = learnFromData(data, audios, w_L, shift)
+function [voiced_model, unvoiced_model] = learnFromData(data, database_dir_data, audios, database_dir_audios, w_L, shift)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,9 +9,9 @@ z_array = [];
 
 for f=1:n_files
     
-    w_prior = [w_prior; textread(strcat('data/fda_ue/',data(f).name))];
+    w_prior = [w_prior; textread(strcat(database_dir_data,data(f).name))];
     
-    [x, f_s] = audioread(strcat('data/fda_ue/',audios(f).name));
+    [x, f_s] = audioread(strcat(database_dir_audios,audios(f).name));
     
     x = expandVector(x,shift,f_s); % Fill the signal x with 0 15ms in the begining and 15ms in the end 
     
@@ -25,7 +25,11 @@ for f=1:n_files
         start = f_s*counter/1e3+1;
         finish = f_s*(counter+w_L)/1e3+1;
 
-        x_w = x(start:finish);
+        if finish > sampl_numb
+            x_w = x(start:end);
+        else
+            x_w = x(start:finish);
+        end
         
         zeroes_n = 0;
         
@@ -59,7 +63,7 @@ voicedSamples = z_array(labelsVoiced);
 labelsUnvoiced = find(voiced<1);
 unvoicedSamples = z_array(labelsUnvoiced);
 
-x=1:600;
+x=1:length(z_array);
 likelihood_voiced = 1/(sqrt(2*pi*var(voicedSamples)))*exp(-1/(2*var(voicedSamples))*(x-mean(voicedSamples)).^2);
 likelihood_unvoiced = 1/(sqrt(2*pi*var(unvoicedSamples)))*exp(-1/(2*var(unvoicedSamples))*(x-mean(unvoicedSamples)).^2);
 

@@ -1,12 +1,17 @@
-function [ output_args ] = getPitchCepstrum(audios, w_L, shift)
+function [pitch_array] = getPitchCepstrum(audios, audios_database_dir, voiced_model, unvoiced_model, w_L, shift)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-    n_files = length(audios);
+   n_files = length(audios);
+
+    h = waitbar(0,'Calculating the pitch');
 
     for f=1:n_files
+        
+        audio_name = strsplit(audios(f).name, '.');
+        fileID = fopen(strcat(audios_database_dir,audio_name{1},'.f0'),'w');
 
-        [x, f_s] = audioread(strcat('data/fda_ue/',audios(f).name));
+        [x, f_s] = audioread(strcat(audios_database_dir, audios(f).name));
 
         x = expandVector(x,shift,f_s); % Fill the signal x with 0 15ms in the begining and 15ms in the end 
 
@@ -15,15 +20,20 @@ function [ output_args ] = getPitchCepstrum(audios, w_L, shift)
 
         pitch_array = [];
         zeroes_array = [];
+        peak_r = [];
 
         for counter = 0:shift:(audio_t-w_L)
 
             start = f_s*counter/1e3+1;
             finish = f_s*(counter+w_L)/1e3+1;
 
-            x_w = x(start:finish);
+            if finish > sampl_numb
+                x_w = x(start:end);
+            else
+                x_w = x(start:finish);
+            end
 
-            zeroes_n = 0;
+            zeroes_n = 1;
 
             for k = 2:(w_L*f_s*1e-3)
                 if x_w(k) == 0
@@ -40,8 +50,9 @@ function [ output_args ] = getPitchCepstrum(audios, w_L, shift)
             if voiced_model(zeroes_n)>unvoiced_model(zeroes_n) % decisor
 
                 % CEPSTRUM STUDY
-                x_cepstrum = rceps(x_w);
-    
+    %             %x_cepstrum = rceps(x_w);
+                x_cepstrum = real(ifft(log(fft(x_w, length(x_w)*30)))); % more samples in order to have a good Cepstrum resolution
+
                 % HUMAN VOICE RANGE:
                 % - Male: 85 to 180 Hz
                 % - Female: 165 to 255 Hz
@@ -50,29 +61,43 @@ function [ output_args ] = getPitchCepstrum(audios, w_L, shift)
                 min_cep_distance = ceil(f_s/human_max_range);
                 max_cep_distance = ceil(f_s/human_min_range);
 
-                cepstrum_fltrd = smooth(x_cepstrum, 'rloess');
+                cepstrum_fltrd = x_cepstrum; %smooth(x_cepstrum, 'rloess');
 
-                [peaks, places] = findpeaks(cepstrum_fltrd(end-max_cep_distance:end));
+                [peaks, places] = findpeaks(cepstrum_fltrd(1:ceil(length(cepstrum_fltrd)/2)));
                 [max_peak, max_peak_place] = max(peaks);
-                [max_peak2, max_peak2_place] = max(peaks(1:max_peak_place-1)); % Finding the second peak
+                [max_peak2, max_peak2_place] = max(peaks(max_peak_place+1:end)); % Finding the second peak
                 max_peak_place = places(max_peak_place); % First max place
+                %places = places(ceil(length(peaks)/2)+1:end);
                 max_peak2_place = places(max_peak2_place); % Second max place
 
-                pitch = f_s/(length(x_cepstrum(end-max_cep_distance:end))-max_peak2_place);
-                pitch2 = f_s/(max_peak_place-max_peak2_place);
+                %pitch = f_s/(90*max_peak_place)
+                pitch = max_peak_place*1e3/w_L;
 
+    %             mode(pitch_array) 
+    %             if pitch2 < mode(pitch_array)
+    %                 pitch = pitch2;
+    %             end
 
-                if (pitch > 270) || (pitch < 80) 
+                peak_r = [peak_r; abs(cepstrum_fltrd(1)/max_peak2)];
+
+                if (pitch > 270) | (pitch < 80) 
                     pitch = 0;
+%                 elseif abs(cepstrum_fltrd(1)/max_peak2) < 10
+%                     pitch = 0;
                 end
+
 
             else
                 pitch = 0;
             end
+            
             pitch_array = [pitch_array; pitch];
         end
-        fprintf(fileID, '%g\n', m_pitch);
+
+        waitbar(f/n_files)
+        fprintf(fileID, '%g\n', pitch_array);
         fclose(fileID);
     end
+close(h) 
 end
 
