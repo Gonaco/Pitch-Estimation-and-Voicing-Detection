@@ -53,7 +53,7 @@ train_audios = dir('data/ptdb_tug/MALE/MIC/M01/*.wav');
 
 %
 files = dir('data/ptdb_tug/MALE/MIC/M01/*.f0ref');
-train_audios = dir('data/ptdb_tug/MALE/MIC/M01/*.wav')
+train_audios = dir('data/ptdb_tug/MALE/MIC/M01/*.wav');
 [voiced_model, unvoiced_model] = learnFromData(files,'data/ptdb_tug/MALE/MIC/M01/',train_audios,'data/ptdb_tug/MALE/MIC/M01/', w_L, 10);
 %
 
