@@ -1,8 +1,5 @@
 ---
 author: Daniel Moreno Manzano
-interleave_pdf: '/scp:daniel@koiserver.ddns.net:\~/Master/ST/Assigments/1/pitch.pdf'
-latex: '\\bibliographystyle{plain}'
-latex_class: paper
 title: Pitch Estimation and voicing detection
 ---
 
@@ -124,13 +121,9 @@ possibility of doing a filter instead of a classifier in order to
 post-process errors. There are zones where (depending on the pitch
 value) is more probable be in the voiced class that in the unvoiced.
 
-![](autocorr_second_peak_pitch_ex.png)
-
 Zooming in, two pitch bands are characterized. And they are the bands
 from the theory. So, our database behaves like expected and we can
 filter the possible errors.
-
-![](clear_pitch_bands.png)
 
 The second intuition lead us to a mean-max study, looking for the answer
 to the /“how are related the mean and maximum values of the function to
@@ -140,8 +133,6 @@ the signal and the autocorrelated signal and, also, the maximum values
 of them, differentiating between the voiced and the unvoiced classes.
 The four histograms are shown below.
 
-![](autocorr_mean_learning.png)
-
 It can be seen a marked difference for the autocorrelated signal
 analysis. Even more for the mean one. The zero mean value is more common
 for the unvoiced values than for the voiced ones. In fact, a threshold
@@ -150,8 +141,6 @@ because the value of the mean for the unvoiced class decays in a very
 hard manner. The previous histogram will be shown below in a bigger
 picture.
 
-![](autocorr_mean_learning_classes_separated.png)
-
 Using this threshold is useful, but the error probability is not
 trivial. This happens because there are also a high amount of voiced
 signals that have a mean value lower than the threshold. Therefore,
@@ -159,8 +148,6 @@ seeking a classification that do not depend on the signal’s amplitude an
 analysis of a new intuition is done. This time the analogous question is
 /“How are the number of peaks and the voiced/unvoiced classes
 related?”/.
-
-![](autocorr_peaks_numb_ex.png)
 
 In the previous picture can be seen that the number of peaks is not
 giving us information in order to classify the data. So, finally, the
@@ -180,8 +167,6 @@ histogram and it will be used in order to perform an optimal bayesian
 decisor. In the next picture, the described results and the gaussian
 transformation are shown. Moreover, it will be seen the posterior
 probability $p(w_i/x)$ with an error probability of 0.16.
-
-![](zero-crossing_bayesian.png)
 
 For this reason, a bayesian decisor will be implemented in the second
 algorithm. With the correct weights looking for the optimal loss
@@ -221,8 +206,6 @@ The autocorrelation has several characteristics:
 An illustrative figure of a noisy signal from the database and its
 autocorrelation is shown below.
 
-![](autocorr_ex.png)
-
 As it can be seen, the autocorrelation function from a noisy signal is
 also noisy and has some irregularities. For example, the big peak next
 to the main one is not the second highest peak, as it should be when
@@ -232,8 +215,6 @@ In the next figure, a voiced sample from the database an its
 autocorrelation is shown instead. Notice that in this case the main
 peaks are behaving as expected. The big peaks highness decay in a
 exponential manner from the main center peak.
-
-![](autocorr_voic_ex.png)
 
 An example of the information given by the principal peaks is the pitch.
 The location of the next peak to the principal one gives an estimate of
@@ -376,8 +357,6 @@ fclose(fileID);
     is shown. But, this is a problem easy to solved, thanks to the
     *previous pitch analysis*.
 
-    ![](autocorr_pitch_peaks_ex.png)
-
     As soon as our audio database corresponds to the human voice theory
     that states a pair of bands for the human pitch one for the female
     pitch and other for male one, a filter can be used.
@@ -400,11 +379,7 @@ fclose(fileID);
     are eliminated. A comparison of the previous pitch evolution (red)
     and the filtered one (blue) is shown below.
 
-    ![](autocorr_pitch_peaks_ex_presolved.png)
-
     And the final result pitch behaviour is
-
-    ![](autocorr_pitch_peaks_ex_solved.png)
 
     That behaves in a more regular way.
 
@@ -422,9 +397,19 @@ fclose(fileID);
 Results
 -------
 
+The results of the autocorrelation algorithms are very good. This is the
+best algorithm performed in this experiment, as it will be seen farther
+on the paper. Good results, simple and fast.
+
 ``` {.bash}
 
-
+   ### Summary
+Num. frames:    22130 = 13906 unvoiced + 8224 voiced
+Unvoiced frames as voiced:  1181/13906 (8.5%)
+Voiced frames as unvoiced:  1125/8224 (14%)
+Gross voiced errors (+20%): 630/7099 (8.9%)
+MSE of fine errors: 2.2%
+--------------------------
 
 ```
 
@@ -467,13 +452,9 @@ $$C(\tau) = {\mathcal {F}}^{-1}\left\{{\mbox{log}}(\left|{\mathcal {F}}\left\{f(
 
 The next picture draw a noisy signal and its Cepstrum processed signal
 
-![](ceps_unvoiced_comp.png)
-
 and this one depict a voiced signal also compared with its Cepstrum. It
 should be noticed that the voiced signal has a very clear peak, meaning
 that the signal has periodicity.
-
-![](ceps_voiced_comp.png)
 
 The real Cepstrum is often used than the complex one, despite of for the
 unvoiced speech zones only the Real Cepstrum has meaning @Huang2001SLP.
@@ -668,10 +649,17 @@ pitch = max_peak_place*1e3/w_L
 Results
 -------
 
+The final results for the Cepstrum algorithm will be very bad.
+
 ``` {.bash}
 
+   ### Summary
+Num. frames:    22127 = 13903 unvoiced + 8224 voiced
+Unvoiced frames as voiced:  240/13903 (1.7%)
+Voiced frames as unvoiced:  7204/8224 (88%)
+Gross voiced errors (+20%): 670/1020 (66%)
+MSE of fine errors: 9%
+--------------------------
 
 
 ```
-
-<bibliography:/ssh:daniel@koiserver.ddns.net:/home/daniel/Documents/Apuntes/Master/ST/Assigments/1/Assigment_1_Pitch_estimation_and_voicing_detection.bib>
